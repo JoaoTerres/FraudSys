@@ -14,4 +14,9 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\FraudSys.App\FraudSys.App.csproj" />
+      <ProjectReference Include="..\FraudSys.Infra\FraudSys.Infra.csproj" />
+    </ItemGroup>
+
 </Project>
