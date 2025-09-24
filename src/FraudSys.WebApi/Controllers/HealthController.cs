@@ -17,7 +17,7 @@ public class HealthController : ControllerBase
     }
 
     /// <summary>
-    /// Checagem de saúde do DynamoDB (versão 1).
+    /// Checagem de saúde do DynamoDB (versão 1 e 2).
     /// </summary>
     [HttpGet("dynamo")]
     public async Task<IActionResult> CheckDynamo()
