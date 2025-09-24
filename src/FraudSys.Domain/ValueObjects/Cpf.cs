@@ -1,21 +1,24 @@
+using System.Text.RegularExpressions;
+using FraudSys.Domain.Validations;
+
 namespace FraudSys.Domain.ValueObjects;
 
 public sealed class Cpf : IEquatable<Cpf>
 {
     public string Numero { get; }
 
-    public Cpf(string numero)
+    private Cpf(string numero)
     {
-        if (string.IsNullOrWhiteSpace(numero))
-            throw new ArgumentException("CPF não pode ser vazio");
-
-        var somenteDigitos = new string(numero.Where(char.IsDigit).ToArray());
-
-        if (somenteDigitos.Length != 11 || !ValidarCpf(somenteDigitos))
-            throw new ArgumentException("CPF inválido");
-
-        Numero = somenteDigitos;
+        Numero = numero;
     }
+
+    public static Cpf Create(string numero)
+    {
+        var cpf = new Cpf(numero);
+        cpf.Validate();
+        return cpf;
+    }
+    public static Cpf Restore(string numero) => new Cpf(numero);
 
     public override string ToString() => Numero;
 
@@ -25,9 +28,12 @@ public sealed class Cpf : IEquatable<Cpf>
     public override bool Equals(object? obj) => Equals(obj as Cpf);
 
     public override int GetHashCode() => Numero.GetHashCode();
-
-    private bool ValidarCpf(string numero)
+    
+    private void Validate()
     {
-        return numero.Length == 11;
+        AssertValidation.ValidateCpfFormat(Numero, "CPF deve conter apenas números");
+        AssertValidation.ValidateIfNullOrEmpty(Numero, "CPF não pode ser vazio.");
+        AssertValidation.ValidateLength(Numero, 11, 11, "CPF deve ter exatamente 11 dígitos.");
+
     }
 }

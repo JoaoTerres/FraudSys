@@ -1,3 +1,4 @@
+using Amazon.DynamoDBv2.DataModel;
 using FraudSys.Domain.Interfaces;
 using FraudSys.Infra.Dynamo;
 using FraudSys.Infra.Repositories;
@@ -10,6 +11,8 @@ public static class InfraExtensions
     public static IServiceCollection AddInfraExtension(this IServiceCollection services)
     {
         services.AddScoped<IContaRepository, ContaRepository>();
+        services.AddScoped<IDynamoDBContext, DynamoDBContext>();
+
         services.AddScoped<DynamoInitializer>();
 
 
