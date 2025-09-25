@@ -8,9 +8,9 @@ public class ApplicationException : Exception
     }
 }
 
-public class ContaNaoEncontradaException : ApplicationException
+public class NotFoundException : ApplicationException
 {
-    public ContaNaoEncontradaException(string documento, string agencia, string numero)
+    public NotFoundException(string documento, string agencia, string numero)
         : base($"Conta não encontrada: Documento={documento}, Agência={agencia}, Conta={numero}")
     {
     }
