@@ -7,17 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
-        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
-        <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.6.3" />
-        <PackageReference Include="MediatR" Version="13.0.0" />
+        <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0"/>
+        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0"/>
+        <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.6.3"/>
+        <PackageReference Include="MediatR" Version="13.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FraudSys.App\FraudSys.App.csproj" />
-      <ProjectReference Include="..\FraudSys.Infra\FraudSys.Infra.csproj" />
+        <ProjectReference Include="..\FraudSys.App\FraudSys.App.csproj"/>
+        <ProjectReference Include="..\FraudSys.Infra\FraudSys.Infra.csproj"/>
     </ItemGroup>
 
 </Project>

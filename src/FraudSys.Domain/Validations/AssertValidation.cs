@@ -34,6 +34,7 @@ public static class AssertValidation
         if (value < min)
             throw new ArgumentException(message);
     }
+
     public static void ValidateCpfFormat(string text, string message)
     {
         if (!Regex.IsMatch(text, @"^[0-9]+$"))

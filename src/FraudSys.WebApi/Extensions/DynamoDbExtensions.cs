@@ -1,10 +1,12 @@
+using Amazon;
 using Amazon.DynamoDBv2;
 
 namespace FraudSys.WebApi.Extensions;
 
 public static class DynamoDbExtensions
 {
-    public static IServiceCollection AddDynamoDbLocal(this IServiceCollection services, string serviceUrl = "http://localhost:8000")
+    public static IServiceCollection AddDynamoDbLocal(this IServiceCollection services,
+        string serviceUrl = "http://localhost:8000")
     {
         services.AddSingleton<IAmazonDynamoDB>(sp =>
         {
@@ -19,14 +21,14 @@ public static class DynamoDbExtensions
 
         return services;
     }
-    
+
     public static IServiceCollection AddDynamoDbAws(this IServiceCollection services, string region = "us-east-1")
     {
         services.AddSingleton<IAmazonDynamoDB>(sp =>
         {
             var config = new AmazonDynamoDBConfig
             {
-                RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(region)
+                RegionEndpoint = RegionEndpoint.GetBySystemName(region)
             };
 
             return new AmazonDynamoDBClient(config);

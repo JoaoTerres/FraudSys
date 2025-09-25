@@ -5,12 +5,9 @@ namespace FraudSys.Domain.Entities;
 
 public class Conta
 {
-    public Cpf Documento { get; private set; }
-    public string Agencia { get; private set; }
-    public string NumeroDaConta { get; private set; }
-    public LimiteDiario LimitePix { get; private set; }
-
-    private Conta() { }
+    private Conta()
+    {
+    }
 
     private Conta(Cpf documento, string agencia, string numero, LimiteDiario limitePix)
     {
@@ -20,20 +17,30 @@ public class Conta
         LimitePix = limitePix;
     }
 
+    public Cpf Documento { get; }
+    public string Agencia { get; }
+    public string NumeroDaConta { get; }
+    public LimiteDiario LimitePix { get; private set; }
+
     public static Conta Create(string documento, string agencia, string numero, decimal limiteDiario)
     {
         var cpf = Cpf.Create(documento);
         var limite = LimiteDiario.Create(limiteDiario);
 
         var conta = new Conta(cpf, agencia, numero, limite);
-        conta.Validate(); 
+        conta.Validate();
         return conta;
     }
 
     public static Conta Restore(Cpf documento, string agencia, string numero, LimiteDiario limitePix)
-        => new Conta(documento, agencia, numero, limitePix);
+    {
+        return new Conta(documento, agencia, numero, limitePix);
+    }
 
-    public bool PodeRealizarPix(decimal valor) => LimitePix.Disponivel(valor);
+    public bool PodeRealizarPix(decimal valor)
+    {
+        return LimitePix.Disponivel(valor);
+    }
 
     public void RealizarPix(decimal valor)
     {
@@ -53,6 +60,7 @@ public class Conta
         AssertValidation.ValidateIfFalse(Agencia.All(char.IsDigit), "Agência deve conter apenas números.");
         AssertValidation.ValidateIfNullOrEmpty(NumeroDaConta, "Número da conta é obrigatório.");
         AssertValidation.ValidateLength(NumeroDaConta, 1, 10, "Número da conta deve ter no máximo 10 caracteres.");
-        AssertValidation.ValidateIfFalse(NumeroDaConta.All(char.IsDigit), "Número da conta deve conter apenas números.");
+        AssertValidation.ValidateIfFalse(NumeroDaConta.All(char.IsDigit),
+            "Número da conta deve conter apenas números.");
     }
 }

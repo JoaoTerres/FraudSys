@@ -6,6 +6,5 @@ public interface IContaRepository
 {
     Task CriarContaAsync(Conta conta);
     Task<Conta?> ObterContaAsync(string documento, string agencia, string numero);
-
-
+    Task AtualizarContaAsync(Conta conta);
 }

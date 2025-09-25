@@ -1,6 +1,5 @@
 using FraudSys.Domain.Entities;
 using FraudSys.Domain.Interfaces;
-using FraudSys.Domain.ValueObjects;
 using MediatR;
 
 namespace FraudSys.App.Features.Commands;
@@ -16,15 +15,14 @@ public class CreateContaCommandHandler : IRequestHandler<CreateContaCommand, Con
 
     public async Task<Conta> Handle(CreateContaCommand request, CancellationToken cancellationToken)
     {
-     
         var conta = Conta.Create(
-            request.Documento, 
-            request.Agencia, 
-            request.Numero, 
+            request.Documento,
+            request.Agencia,
+            request.NumeroDaConta,
             request.LimitePix);
 
-        await _repository.CriarContaAsync(conta); 
-        
+        await _repository.CriarContaAsync(conta);
+
         return conta;
     }
 }

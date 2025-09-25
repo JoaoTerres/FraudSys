@@ -17,7 +17,7 @@ public class CreateContaCommandValidator : AbstractValidator<CreateContaCommand>
             .Length(4).WithMessage("Agência deve ter exatamente 4 dígitos")
             .Matches(@"^\d+$").WithMessage("Agência deve conter apenas números");
 
-        RuleFor(x => x.Numero)
+        RuleFor(x => x.NumeroDaConta)
             .NotEmpty().WithMessage("Número da conta é obrigatório")
             .MinimumLength(1).WithMessage("Número da conta deve ter no mínimo 1 caractere")
             .MaximumLength(10).WithMessage("Número da conta deve ter no máximo 10 caracteres")

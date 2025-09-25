@@ -29,4 +29,10 @@ public class ContaRepository : IContaRepository
         var model = await _context.LoadAsync<ContaDynamoModel>(pk, sk);
         return model is null ? null : ContaMapper.ToEntity(model);
     }
+
+    public async Task AtualizarContaAsync(Conta conta)
+    {
+        var model = ContaMapper.ToModel(conta);
+        await _context.SaveAsync(model);
+    }
 }

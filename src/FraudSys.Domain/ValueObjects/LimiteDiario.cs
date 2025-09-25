@@ -4,10 +4,6 @@ namespace FraudSys.Domain.ValueObjects;
 
 public sealed class LimiteDiario
 {
-    public decimal ValorMaximo { get; }
-    public decimal ValorUtilizado { get; private set; }
-    public DateTime DataReferencia { get; private set; }
-
     private LimiteDiario(decimal valorMaximo)
     {
         ValorMaximo = valorMaximo;
@@ -15,15 +11,22 @@ public sealed class LimiteDiario
         DataReferencia = DateTime.UtcNow.Date;
     }
 
+    public decimal ValorMaximo { get; }
+    public decimal ValorUtilizado { get; private set; }
+    public DateTime DataReferencia { get; private set; }
+
     public static LimiteDiario Create(decimal valorMaximo)
     {
         var limite = new LimiteDiario(valorMaximo);
         limite.Validate();
         return limite;
-    }    
+    }
+
     public static LimiteDiario Restore(decimal max, decimal usado, DateTime refDate)
-        => new LimiteDiario(max) { ValorUtilizado = usado, DataReferencia = refDate };
-    
+    {
+        return new LimiteDiario(max) { ValorUtilizado = usado, DataReferencia = refDate };
+    }
+
 
     public bool Disponivel(decimal valor)
     {
@@ -49,7 +52,7 @@ public sealed class LimiteDiario
             DataReferencia = DateTime.UtcNow.Date;
         }
     }
-    
+
     private void Validate()
     {
         AssertValidation.ValidateIfLowerThen((long)ValorMaximo, 1, "Limite diário deve ser maior que zero.");

@@ -1,15 +1,19 @@
-using System.Text.RegularExpressions;
 using FraudSys.Domain.Validations;
 
 namespace FraudSys.Domain.ValueObjects;
 
 public sealed class Cpf : IEquatable<Cpf>
 {
-    public string Numero { get; }
-
     private Cpf(string numero)
     {
         Numero = numero;
+    }
+
+    public string Numero { get; }
+
+    public bool Equals(Cpf? other)
+    {
+        return other is not null && Numero == other.Numero;
     }
 
     public static Cpf Create(string numero)
@@ -18,22 +22,31 @@ public sealed class Cpf : IEquatable<Cpf>
         cpf.Validate();
         return cpf;
     }
-    public static Cpf Restore(string numero) => new Cpf(numero);
 
-    public override string ToString() => Numero;
+    public static Cpf Restore(string numero)
+    {
+        return new Cpf(numero);
+    }
 
-    public bool Equals(Cpf? other) =>
-        other is not null && Numero == other.Numero;
+    public override string ToString()
+    {
+        return Numero;
+    }
 
-    public override bool Equals(object? obj) => Equals(obj as Cpf);
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as Cpf);
+    }
 
-    public override int GetHashCode() => Numero.GetHashCode();
-    
+    public override int GetHashCode()
+    {
+        return Numero.GetHashCode();
+    }
+
     private void Validate()
     {
         AssertValidation.ValidateCpfFormat(Numero, "CPF deve conter apenas números");
         AssertValidation.ValidateIfNullOrEmpty(Numero, "CPF não pode ser vazio.");
         AssertValidation.ValidateLength(Numero, 11, 11, "CPF deve ter exatamente 11 dígitos.");
-
     }
 }
