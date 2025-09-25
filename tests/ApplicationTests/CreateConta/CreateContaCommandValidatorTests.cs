@@ -1,3 +1,4 @@
+using FluentAssertions;
 using FluentValidation.TestHelper;
 using FraudSys.App.Features.Commands;
 using FraudSys.App.Features.Commands.CreateConta;
@@ -7,7 +8,7 @@ namespace ApplicationTests;
 public class CreateContaCommandValidatorTests
 {
     private readonly CreateContaCommandValidator _validator = new();
-    
+
     [Fact]
     public void Documento_Nulo_DeveFalhar()
     {
@@ -18,6 +19,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.Documento)
             .WithErrorMessage("Documento é obrigatório");
     }
@@ -32,6 +34,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.Documento)
             .WithErrorMessage("Documento (CPF) é obrigatório");
     }
@@ -46,6 +49,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.Documento)
             .WithErrorMessage("Documento deve ter exatamente 11 dígitos");
     }
@@ -60,6 +64,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.Documento)
             .WithErrorMessage("Documento deve ter exatamente 11 dígitos");
     }
@@ -74,10 +79,11 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.Documento)
             .WithErrorMessage("Documento deve conter apenas números");
     }
-    
+
     [Fact]
     public void Agencia_Vazia_DeveFalhar()
     {
@@ -88,6 +94,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.Agencia)
             .WithErrorMessage("Agência é obrigatória");
     }
@@ -102,6 +109,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.Agencia)
             .WithErrorMessage("Agência deve ter exatamente 4 dígitos");
     }
@@ -116,6 +124,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.Agencia)
             .WithErrorMessage("Agência deve ter exatamente 4 dígitos");
     }
@@ -130,10 +139,11 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.Agencia)
             .WithErrorMessage("Agência deve conter apenas números");
     }
-    
+
     [Fact]
     public void NumeroConta_Vazio_DeveFalhar()
     {
@@ -144,6 +154,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.NumeroDaConta)
             .WithErrorMessage("Número da conta é obrigatório");
     }
@@ -158,6 +169,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.NumeroDaConta)
             .WithErrorMessage("Número da conta deve ter no máximo 10 caracteres");
     }
@@ -172,10 +184,11 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.NumeroDaConta)
             .WithErrorMessage("Número da conta deve conter apenas números");
     }
-    
+
     [Fact]
     public void LimitePix_MenorOuIgualAZero_DeveFalhar()
     {
@@ -186,10 +199,11 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(x => x.LimitePix)
             .WithErrorMessage("O limite PIX deve ser maior que zero");
     }
-    
+
     [Fact]
     public void ComandoValido_DevePassar()
     {
@@ -200,6 +214,7 @@ public class CreateContaCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
+        result.IsValid.Should().BeTrue();
         result.ShouldNotHaveAnyValidationErrors();
     }
 }
