@@ -293,4 +293,34 @@ public class ContaTests : IClassFixture<ContaFixture>
         act.Should().Throw<DomainException>()
             .WithMessage("Limite diário deve ser maior que zero.");
     }
+
+    [Fact]
+    public void Delete_ComContaAtiva_DeveMarcarComoDeletada()
+    {
+        // Arrange
+        var conta = _fixture.CriarContaValida();
+
+        // Act
+        conta.Delete();
+
+        // Assert
+        conta.IsDeleted.Should().BeTrue();
+        conta.DeletedAt.Should().NotBeNull();
+        conta.DeletedAt!.Value.Date.Should().Be(DateTime.UtcNow.Date);
+    }
+
+    [Fact]
+    public void Delete_ComContaJaDeletada_DeveLancarExcecao()
+    {
+        // Arrange
+        var conta = _fixture.CriarContaValida();
+        conta.Delete();
+
+        // Act
+        var act = () => conta.Delete();
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("A conta já foi excluída.");
+    }
 }

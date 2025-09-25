@@ -47,4 +47,10 @@ public static class AssertValidation
         if (!Regex.IsMatch(text, @"^[0-9]+$"))
             throw new DomainException(message);
     }
+
+    public static void ValidateIfTrue(bool condition, string message)
+    {
+        if (condition)
+            throw new DomainException(message);
+    }
 }

@@ -18,4 +18,8 @@ public class ContaDynamoModel
     [DynamoDBProperty] public decimal ValorUtilizado { get; set; }
 
     [DynamoDBProperty] public string DataReferencia { get; set; } = default!;
+
+    [DynamoDBProperty] public bool IsDeleted { get; set; }
+
+    [DynamoDBProperty] public string? DeletedAt { get; set; }
 }

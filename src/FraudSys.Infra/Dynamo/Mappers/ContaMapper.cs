@@ -16,7 +16,11 @@ public static class ContaMapper
             Numero = conta.NumeroDaConta,
             LimiteMaximo = conta.LimitePix.ValorMaximo,
             ValorUtilizado = conta.LimitePix.ValorUtilizado,
-            DataReferencia = conta.LimitePix.DataReferencia.ToString("yyyy-MM-dd")
+            DataReferencia = conta.LimitePix.DataReferencia.ToString("yyyy-MM-dd"),
+
+            // 🔹 Soft Delete
+            IsDeleted = conta.IsDeleted,
+            DeletedAt = conta.DeletedAt?.ToString("O") // ISO 8601 para consistência
         };
     }
 
@@ -29,6 +33,15 @@ public static class ContaMapper
             DateTime.Parse(model.DataReferencia)
         );
 
-        return Conta.Restore(cpf, model.Agencia, model.Numero, limite);
+        var conta = Conta.Restore(cpf, model.Agencia, model.Numero, limite);
+
+        if (model.IsDeleted)
+        {
+            typeof(Conta).GetProperty("IsDeleted")!.SetValue(conta, model.IsDeleted);
+            if (!string.IsNullOrEmpty(model.DeletedAt))
+                typeof(Conta).GetProperty("DeletedAt")!.SetValue(conta, DateTime.Parse(model.DeletedAt));
+        }
+
+        return conta;
     }
 }

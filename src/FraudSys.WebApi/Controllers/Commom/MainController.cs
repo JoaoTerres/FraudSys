@@ -9,6 +9,7 @@ public abstract class MainController : ControllerBase
     protected ActionResult CustomResponse<T>(
         Result<T> result,
         bool isCreate = false,
+        bool isDelete = false,
         string? getActionName = null,
         object? routeValues = null,
         string? conflictErrorKeyword = "já existe")
@@ -34,10 +35,14 @@ public abstract class MainController : ControllerBase
             return UnprocessableEntity(error);
         }
 
+        if (isDelete)
+            return NoContent();
+
         if (isCreate && getActionName is not null && routeValues is not null)
             return CreatedAtAction(getActionName, routeValues, result.Value);
 
-        if (isCreate) return StatusCode(201, result.Value);
+        if (isCreate)
+            return StatusCode(201, result.Value);
 
         return Ok(result.Value);
     }

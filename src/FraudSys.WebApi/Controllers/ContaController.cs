@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using FraudSys.App.Dtos;
 using FraudSys.App.Features.Commands.CreateConta;
+using FraudSys.App.Features.Commands.DeleteConta;
 using FraudSys.App.Features.Commands.UpdateConta;
 using FraudSys.App.Features.Queries.GetConta;
 using MediatR;
@@ -28,10 +29,11 @@ public class ContaController : MainController
         return CustomResponse(
             result,
             true,
-            nameof(Get),
-            new
+            getActionName: nameof(Get),
+            routeValues: new
             {
-                documento = result.Value?.Documento, agencia = result.Value?.Agencia,
+                documento = result.Value?.Documento,
+                agencia = result.Value?.Agencia,
                 numero = result.Value?.NumeroDaConta
             }
         );
@@ -55,5 +57,14 @@ public class ContaController : MainController
         var command = new UpdateContaCommand(documento, agencia, numero, body.NovoLimitePix);
         var result = await _mediator.Send(command);
         return CustomResponse(result);
+    }
+
+    [HttpDelete("{documento}/{agencia}/{numero}")]
+    public async Task<ActionResult> Delete(string documento, string agencia, string numero)
+    {
+        var command = new DeleteContaCommand(documento, agencia, numero);
+        var result = await _mediator.Send(command);
+
+        return CustomResponse(result, isDelete: true);
     }
 }

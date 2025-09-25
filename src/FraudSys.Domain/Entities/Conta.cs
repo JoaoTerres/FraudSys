@@ -15,12 +15,16 @@ public class Conta
         Agencia = agencia;
         NumeroDaConta = numero;
         LimitePix = limitePix;
+        IsDeleted = false;
     }
 
     public Cpf Documento { get; }
     public string Agencia { get; }
     public string NumeroDaConta { get; }
     public LimiteDiario LimitePix { get; private set; }
+
+    public bool IsDeleted { get; private set; }
+    public DateTime? DeletedAt { get; private set; }
 
     public static Conta Create(string documento, string agencia, string numero, decimal limiteDiario)
     {
@@ -32,10 +36,27 @@ public class Conta
         return conta;
     }
 
-    public static Conta Restore(Cpf documento, string agencia, string numero, LimiteDiario limitePix)
+    public static Conta Restore(Cpf documento, string agencia, string numero, LimiteDiario limitePix,
+        bool isDeleted = false, DateTime? deletedAt = null)
     {
-        return new Conta(documento, agencia, numero, limitePix);
+        var conta = new Conta(documento, agencia, numero, limitePix);
+        if (isDeleted)
+        {
+            conta.Delete();
+            conta.DeletedAt = deletedAt;
+        }
+
+        return conta;
     }
+
+    public void Delete()
+    {
+        AssertValidation.ValidateIfTrue(IsDeleted, "A conta já foi excluída.");
+
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+    }
+
 
     public bool PodeRealizarPix(decimal valor)
     {
