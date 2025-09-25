@@ -15,7 +15,7 @@ public class ContaTests : IClassFixture<ContaFixture>
     }
 
     [Fact]
-    public void Create_ContaValida_DeveCriarInstancia()
+    public void Create_ComParametrosValidos_DeveCriarConta()
     {
         // Arrange
         var documento = "12345678901";
@@ -34,22 +34,117 @@ public class ContaTests : IClassFixture<ContaFixture>
         conta.LimitePix.ValorMaximo.Should().Be(limite);
     }
 
-    [Theory]
-    [InlineData(null, "1234", "56789", 1000)]
-    [InlineData("123", "1234", "56789", 1000)]
-    [InlineData("12345678901", null, "56789", 1000)]
-    [InlineData("12345678901", "12", "56789", 1000)]
-    [InlineData("12345678901", "1234", null, 1000)]
-    [InlineData("12345678901", "1234", "ABCDE", 1000)]
-    public void Create_ContaInvalida_DeveLancarExcecao(
-        string documento, string agencia, string numero, decimal limite)
+    [Fact]
+    public void Create_ComCpfNulo_DeveLancarExcecao()
     {
         // Act
-        Action act = () => Conta.Create(documento!, agencia!, numero!, limite);
+        Action act = () => Conta.Create(null!, "1234", "56789", 1000m);
 
         // Assert
         act.Should().Throw<DomainException>()
-            .WithMessage("*");
+            .WithMessage("CPF não pode ser vazio.");
+    }
+
+    [Fact]
+    public void Create_ComCpfInvalido_DeveLancarExcecao()
+    {
+        // Act
+        Action act = () => Conta.Create("123", "1234", "56789", 1000m);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("CPF deve ter exatamente 11 dígitos.");
+    }
+
+    [Fact]
+    public void Create_ComAgenciaNula_DeveLancarExcecao()
+    {
+        // Act
+        Action act = () => Conta.Create("12345678901", null!, "56789", 1000m);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Agência é obrigatória.");
+    }
+
+    [Fact]
+    public void Create_ComAgenciaInvalida_DeveLancarExcecao()
+    {
+        // Act
+        Action act = () => Conta.Create("12345678901", "12", "56789", 1000m);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Agência deve ter exatamente 4 caracteres.");
+    }
+
+    [Fact]
+    public void Create_ComNumeroContaNulo_DeveLancarExcecao()
+    {
+        // Act
+        Action act = () => Conta.Create("12345678901", "1234", null!, 1000m);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Número da conta é obrigatório.");
+    }
+
+    [Fact]
+    public void Create_ComNumeroContaInvalido_DeveLancarExcecao()
+    {
+        // Act
+        Action act = () => Conta.Create("12345678901", "1234", "ABCDE", 1000m);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Número da conta deve conter apenas números.");
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-100)]
+    public void Create_ComLimiteInvalido_DeveLancarExcecao(decimal limiteInvalido)
+    {
+        // Act
+        Action act = () => Conta.Create("12345678901", "1234", "56789", limiteInvalido);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Limite diário deve ser maior que zero.");
+    }
+
+    [Fact]
+    public void Restore_ComParametrosValidos_DeveCriarConta()
+    {
+        // Arrange
+        var cpf = Cpf.Create("12345678901");
+        var limite = LimiteDiario.Create(1000m);
+
+        // Act
+        var conta = Conta.Restore(cpf, "1234", "56789", limite);
+
+        // Assert
+        conta.Should().NotBeNull();
+        conta.Documento.Should().Be(cpf);
+        conta.Agencia.Should().Be("1234");
+        conta.NumeroDaConta.Should().Be("56789");
+        conta.LimitePix.Should().Be(limite);
+    }
+
+    [Fact]
+    public void Restore_ComParametrosInvalidos_DeveCriarMesmoAssim()
+    {
+        // Arrange
+        var cpf = Cpf.Restore("abc"); // Restore não valida
+        var limite = LimiteDiario.Restore(0.01m, 0m, DateTime.UtcNow.Date);
+
+        // Act
+        var conta = Conta.Restore(cpf, "", "XYZ", limite);
+
+        // Assert
+        conta.Documento.Numero.Should().Be("abc");
+        conta.Agencia.Should().Be("");
+        conta.NumeroDaConta.Should().Be("XYZ");
     }
 
     [Fact]
@@ -81,7 +176,21 @@ public class ContaTests : IClassFixture<ContaFixture>
     }
 
     [Fact]
-    public void RealizarPix_ValorValido_DeveDebitarLimite()
+    public void PodeRealizarPix_AposAlterarLimite_DeveRefletirNovoLimite()
+    {
+        // Arrange
+        var conta = _fixture.CriarContaValida();
+
+        // Act
+        conta.AlterarLimite(50m);
+        var resultado = conta.PodeRealizarPix(60m);
+
+        // Assert
+        resultado.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RealizarPix_ComValorValido_DeveDebitarLimite()
     {
         // Arrange
         var conta = _fixture.CriarContaValida();
@@ -95,124 +204,49 @@ public class ContaTests : IClassFixture<ContaFixture>
     }
 
     [Fact]
-    public void RealizarPix_ValorAcimaDoLimite_DeveLancarExcecao()
+    public void RealizarPix_ComValorAcimaDoLimite_DeveLancarExcecaoESalvarEstado()
     {
         // Arrange
         var conta = _fixture.CriarContaValida();
-        var valor = 2000m;
+        var valorAntes = conta.LimitePix.ValorUtilizado;
 
         // Act
-        var act = () => conta.RealizarPix(valor);
+        var act = () => conta.RealizarPix(2000m);
 
         // Assert
         act.Should().Throw<DomainException>()
             .WithMessage("Limite diário insuficiente.");
+        conta.LimitePix.ValorUtilizado.Should().Be(valorAntes); // invariável mantido
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-100)]
-    public void Create_LimiteInvalido_DeveLancarExcecao(decimal limiteInvalido)
-    {
-        // Act
-        Action act = () => Conta.Create("12345678901", "1234", "56789", limiteInvalido);
-
-        // Assert
-        act.Should().Throw<DomainException>()
-            .WithMessage("Limite diário deve ser maior que zero.");
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-50)]
-    public void AlterarLimite_ValorInvalido_DeveLancarExcecao(decimal limiteInvalido)
+    [Fact]
+    public void RealizarPix_ComValorZero_DeveLancarExcecao()
     {
         // Arrange
         var conta = _fixture.CriarContaValida();
 
         // Act
-        var act = () => conta.AlterarLimite(limiteInvalido);
+        var act = () => conta.RealizarPix(0);
 
         // Assert
         act.Should().Throw<DomainException>()
-            .WithMessage("Limite diário deve ser maior que zero.");
+            .WithMessage("Valor deve ser maior ou igual a 0,01.");
     }
-    
+
     [Fact]
-    public void Restore_ComParametrosValidos_DeveCriarConta()
-    {
-        // Arrange
-        var cpf = Cpf.Create("12345678901");
-        var limite = LimiteDiario.Create(1000m);
-
-        // Act
-        var conta = Conta.Restore(cpf, "1234", "56789", limite);
-
-        // Assert
-        conta.Should().NotBeNull();
-        conta.Documento.Should().Be(cpf);
-        conta.Agencia.Should().Be("1234");
-        conta.NumeroDaConta.Should().Be("56789");
-        conta.LimitePix.Should().Be(limite);
-    }
-    
-    [Fact]
-    public void Create_CpfNulo_DeveLancarExcecao()
-    {
-        // Act
-        Action act = () => Conta.Create(null!, "1234", "56789", 1000m);
-
-        // Assert
-        act.Should().Throw<DomainException>()
-            .WithMessage("CPF não pode ser vazio.");
-    }
-    
-    [Fact]
-    public void Restore_ComParametrosInvalidos_DeveCriarMesmoAssim()
-    {
-        // Arrange
-        var cpf = Cpf.Restore("abc");
-        var limite = LimiteDiario.Restore(0.01m, 0m, DateTime.UtcNow.Date);
-
-        // Act
-        var conta = Conta.Restore(cpf, "", "ABC", limite);
-
-        // Assert
-        conta.Documento.Numero.Should().Be("abc");
-        conta.Agencia.Should().Be("");
-        conta.NumeroDaConta.Should().Be("ABC");
-    }
-    
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-10)]
-    public void RealizarPix_ValorInvalido_DeveLancarExcecao(decimal valorInvalido)
+    public void RealizarPix_ComValorNegativo_DeveLancarExcecao()
     {
         // Arrange
         var conta = _fixture.CriarContaValida();
 
         // Act
-        Action act = () => conta.RealizarPix(valorInvalido);
+        var act = () => conta.RealizarPix(-10);
 
         // Assert
         act.Should().Throw<DomainException>()
-            .WithMessage("*Valor*");
+            .WithMessage("Valor não pode ser negativo.");
     }
-    
-    [Fact]
-    public void PodeRealizarPix_AposAlterarLimite_DeveRefletirNovoLimite()
-    {
-        // Arrange
-        var conta = _fixture.CriarContaValida();
 
-        // Act
-        conta.AlterarLimite(50m);
-        var resultado = conta.PodeRealizarPix(60m);
-
-        // Assert
-        resultado.Should().BeFalse();
-    }
-    
     [Fact]
     public void RealizarPix_MultiplasVezes_DeveAcumularNoLimite()
     {
@@ -227,9 +261,9 @@ public class ContaTests : IClassFixture<ContaFixture>
         conta.LimitePix.ValorUtilizado.Should().Be(500m);
         conta.PodeRealizarPix(600m).Should().BeFalse();
     }
-    
+
     [Fact]
-    public void AlterarLimite_ComValorValido_DeveTrocarLimiteInternamente()
+    public void AlterarLimite_ComValorValido_DeveAtualizarLimite()
     {
         // Arrange
         var conta = _fixture.CriarContaValida();
@@ -243,5 +277,20 @@ public class ContaTests : IClassFixture<ContaFixture>
         conta.LimitePix.ValorMaximo.Should().Be(novoLimite);
         conta.LimitePix.ValorMaximo.Should().NotBe(limiteAntigo);
     }
-    
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-50)]
+    public void AlterarLimite_ComValorInvalido_DeveLancarExcecao(decimal limiteInvalido)
+    {
+        // Arrange
+        var conta = _fixture.CriarContaValida();
+
+        // Act
+        var act = () => conta.AlterarLimite(limiteInvalido);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Limite diário deve ser maior que zero.");
+    }
 }

@@ -7,7 +7,7 @@ namespace DomainTests;
 public class CpfTests
 {
     [Fact]
-    public void Create_CpfValido_DeveRetornarInstancia()
+    public void Create_ComCpfValido_DeveRetornarInstancia()
     {
         // Arrange
         var numero = "12345678901";
@@ -20,13 +20,22 @@ public class CpfTests
         cpf.Numero.Should().Be(numero);
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void Create_CpfNuloOuVazio_DeveLancarExcecao(string? documento)
+    [Fact]
+    public void Create_ComCpfNulo_DeveLancarExcecao()
     {
         // Act
-        Action act = () => Cpf.Create(documento!);
+        Action act = () => Cpf.Create(null!);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("CPF não pode ser vazio.");
+    }
+
+    [Fact]
+    public void Create_ComCpfVazio_DeveLancarExcecao()
+    {
+        // Act
+        Action act = () => Cpf.Create("");
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -34,10 +43,10 @@ public class CpfTests
     }
 
     [Theory]
-    [InlineData("123")]        
-    [InlineData("1234567890")]   
+    [InlineData("123")]
+    [InlineData("1234567890")]
     [InlineData("123456789012")]
-    public void Create_CpfComTamanhoInvalido_DeveLancarExcecao(string documento)
+    public void Create_ComCpfComTamanhoInvalido_DeveLancarExcecao(string documento)
     {
         // Act
         Action act = () => Cpf.Create(documento);
@@ -48,10 +57,10 @@ public class CpfTests
     }
 
     [Theory]
-    [InlineData("1234567890A")] 
-    [InlineData("12345-67890")] 
-    [InlineData("12345.67890")] 
-    public void Create_CpfComCaracteresInvalidos_DeveLancarExcecao(string documento)
+    [InlineData("1234567890A")]
+    [InlineData("12345-67890")]
+    [InlineData("12345.67890")]
+    public void Create_ComCpfComCaracteresInvalidos_DeveLancarExcecao(string documento)
     {
         // Act
         Action act = () => Cpf.Create(documento);
@@ -76,7 +85,7 @@ public class CpfTests
     }
 
     [Fact]
-    public void Equals_CpfsIguais_DeveRetornarTrue()
+    public void Equals_ComCpfsIguais_DeveRetornarTrue()
     {
         // Arrange
         var cpf1 = Cpf.Create("12345678901");
@@ -91,7 +100,7 @@ public class CpfTests
     }
 
     [Fact]
-    public void Equals_CpfsDiferentes_DeveRetornarFalse()
+    public void Equals_ComCpfsDiferentes_DeveRetornarFalse()
     {
         // Arrange
         var cpf1 = Cpf.Create("12345678901");
@@ -106,7 +115,34 @@ public class CpfTests
     }
 
     [Fact]
-    public void GetHashCode_CpfsIguais_DeveRetornarMesmoHash()
+    public void Equals_ComparandoComObjetoNulo_DeveRetornarFalse()
+    {
+        // Arrange
+        var cpf = Cpf.Create("12345678901");
+
+        // Act
+        var iguais = cpf.Equals(null);
+
+        // Assert
+        iguais.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Equals_ComparandoComOutroTipo_DeveRetornarFalse()
+    {
+        // Arrange
+        var cpf = Cpf.Create("12345678901");
+        var outroObjeto = new object();
+
+        // Act
+        var iguais = cpf.Equals(outroObjeto);
+
+        // Assert
+        iguais.Should().BeFalse();
+    }
+
+    [Fact]
+    public void GetHashCode_ComCpfsIguais_DeveRetornarMesmoHash()
     {
         // Arrange
         var cpf1 = Cpf.Create("12345678901");
@@ -118,6 +154,21 @@ public class CpfTests
 
         // Assert
         hash1.Should().Be(hash2);
+    }
+
+    [Fact]
+    public void GetHashCode_ComCpfsDiferentes_DeveRetornarHashesDiferentes()
+    {
+        // Arrange
+        var cpf1 = Cpf.Create("12345678901");
+        var cpf2 = Cpf.Create("10987654321");
+
+        // Act
+        var hash1 = cpf1.GetHashCode();
+        var hash2 = cpf2.GetHashCode();
+
+        // Assert
+        hash1.Should().NotBe(hash2);
     }
 
     [Fact]
