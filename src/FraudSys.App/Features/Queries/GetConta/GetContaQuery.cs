@@ -1,9 +1,10 @@
+using FraudSys.App.Result;
 using FraudSys.Domain.Entities;
 using MediatR;
 
 namespace FraudSys.App.Features.Queries.GetConta;
 
-public class GetContaQuery : IRequest<Conta?>
+public class GetContaQuery : IRequest<Result<Conta>>
 {
     public GetContaQuery(string documento, string agencia, string numero)
     {

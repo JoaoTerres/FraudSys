@@ -1,9 +1,10 @@
-using FraudSys.Domain.Entities;
+using FraudSys.App.Dtos;
+using FraudSys.App.Result;
 using MediatR;
 
-namespace FraudSys.App.Features.Commands;
+namespace FraudSys.App.Features.Commands.CreateConta;
 
-public class CreateContaCommand : IRequest<Conta>
+public class CreateContaCommand : IRequest<Result<ContaResult>>
 {
     public CreateContaCommand(
         string documento,
@@ -17,8 +18,8 @@ public class CreateContaCommand : IRequest<Conta>
         LimitePix = limitePix;
     }
 
-    public string Documento { get; private set; }
-    public string Agencia { get; private set; }
-    public string NumeroDaConta { get; private set; }
-    public decimal LimitePix { get; private set; }
+    public string Documento { get; }
+    public string Agencia { get; }
+    public string NumeroDaConta { get; }
+    public decimal LimitePix { get; }
 }

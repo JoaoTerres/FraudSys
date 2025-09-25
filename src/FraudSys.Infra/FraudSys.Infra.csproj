@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\FraudSys.App\FraudSys.App.csproj" />
+        <ProjectReference Include="..\FraudSys.App\FraudSys.App.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

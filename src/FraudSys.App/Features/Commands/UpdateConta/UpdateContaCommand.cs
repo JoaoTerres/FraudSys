@@ -1,9 +1,10 @@
-using FraudSys.Domain.Entities;
+using FraudSys.App.Dtos;
+using FraudSys.App.Result;
 using MediatR;
 
 namespace FraudSys.App.Features.Commands.UpdateConta;
 
-public class UpdateContaCommand : IRequest<Conta>
+public class UpdateContaCommand : IRequest<Result<ContaResult>>
 {
     public UpdateContaCommand(
         string documento,
@@ -17,8 +18,8 @@ public class UpdateContaCommand : IRequest<Conta>
         NovoLimitePix = novoLimitePix;
     }
 
-    public string Documento { get; set; }
-    public string Agencia { get; set; }
-    public string NumeroDaConta { get; set; }
-    public decimal NovoLimitePix { get; set; }
+    public string Documento { get; }
+    public string Agencia { get; }
+    public string NumeroDaConta { get; }
+    public decimal NovoLimitePix { get; }
 }

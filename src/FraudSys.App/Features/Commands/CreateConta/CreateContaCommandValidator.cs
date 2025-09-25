@@ -1,4 +1,5 @@
 using FluentValidation;
+using FraudSys.App.Features.Commands.CreateConta;
 
 namespace FraudSys.App.Features.Commands;
 

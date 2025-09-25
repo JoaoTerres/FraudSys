@@ -1,6 +1,6 @@
 using Asp.Versioning;
 using FraudSys.App.Dtos;
-using FraudSys.App.Features.Commands;
+using FraudSys.App.Features.Commands.CreateConta;
 using FraudSys.App.Features.Commands.UpdateConta;
 using FraudSys.App.Features.Queries.GetConta;
 using MediatR;
@@ -11,7 +11,7 @@ namespace FraudSys.WebApi.Controllers;
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion(1.0)]
-public class ContaController : ControllerBase
+public class ContaController : MainController
 {
     private readonly IMediator _mediator;
 
@@ -24,7 +24,17 @@ public class ContaController : ControllerBase
     public async Task<ActionResult> Create([FromBody] CreateContaCommand command)
     {
         var result = await _mediator.Send(command);
-        return StatusCode(201, result);
+
+        return CustomResponse(
+            result,
+            true,
+            nameof(Get),
+            new
+            {
+                documento = result.Value?.Documento, agencia = result.Value?.Agencia,
+                numero = result.Value?.NumeroDaConta
+            }
+        );
     }
 
     [HttpGet("{documento}/{agencia}/{numero}")]
@@ -32,7 +42,7 @@ public class ContaController : ControllerBase
     {
         var query = new GetContaQuery(documento, agencia, numero);
         var result = await _mediator.Send(query);
-        return Ok(result);
+        return CustomResponse(result);
     }
 
     [HttpPatch("{documento}/{agencia}/{numero}/limite")]
@@ -44,6 +54,6 @@ public class ContaController : ControllerBase
     {
         var command = new UpdateContaCommand(documento, agencia, numero, body.NovoLimitePix);
         var result = await _mediator.Send(command);
-        return Ok(result);
+        return CustomResponse(result);
     }
 }

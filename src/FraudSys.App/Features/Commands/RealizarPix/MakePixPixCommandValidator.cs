@@ -1,5 +1,5 @@
 namespace FraudSys.App.Features.Commands.RealizarPix;
 
-public class RealizarPixCommandValidator
+public class MakePixPixCommandValidator
 {
 }

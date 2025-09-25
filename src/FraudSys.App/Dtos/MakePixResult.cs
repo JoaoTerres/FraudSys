@@ -1,6 +1,6 @@
 namespace FraudSys.App.Dtos;
 
-public class RealizarPixResult
+public class MakePixResult
 {
     public bool Sucesso { get; set; }
     public string Mensagem { get; set; }

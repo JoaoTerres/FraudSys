@@ -18,7 +18,7 @@ public class TransacoesController : ControllerBase
     }
 
     [HttpPost("pix")]
-    public async Task<ActionResult> RealizarPix([FromBody] RealizarPixCommand command)
+    public async Task<ActionResult> RealizarPix([FromBody] MakePixCommand command)
     {
         var result = await _mediator.Send(command);
 

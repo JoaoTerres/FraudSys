@@ -3,7 +3,7 @@ using MediatR;
 
 namespace FraudSys.App.Features.Commands.RealizarPix;
 
-public class RealizarPixCommand : IRequest<RealizarPixResult>
+public class MakePixCommand : IRequest<MakePixResult>
 {
     public string Documento { get; set; } = string.Empty;
     public string Agencia { get; set; } = string.Empty;
