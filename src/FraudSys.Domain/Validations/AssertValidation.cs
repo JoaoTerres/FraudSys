@@ -30,9 +30,15 @@ public static class AssertValidation
             throw new DomainException(message);
     }
 
-    public static void ValidateIfLowerThen(long value, long min, string message)
+    public static void ValidateIfLowerThan(decimal value, decimal min, string message)
     {
         if (value < min)
+            throw new DomainException(message);
+    }
+
+    public static void ValidateIfNegative(decimal value, string message)
+    {
+        if (value < 0)
             throw new DomainException(message);
     }
 

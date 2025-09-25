@@ -45,8 +45,8 @@ public sealed class Cpf : IEquatable<Cpf>
 
     private void Validate()
     {
-        AssertValidation.ValidateCpfFormat(Numero, "CPF deve conter apenas números");
         AssertValidation.ValidateIfNullOrEmpty(Numero, "CPF não pode ser vazio.");
         AssertValidation.ValidateLength(Numero, 11, 11, "CPF deve ter exatamente 11 dígitos.");
+        AssertValidation.ValidateCpfFormat(Numero, "CPF deve conter apenas números");
     }
 }

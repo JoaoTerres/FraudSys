@@ -36,10 +36,11 @@ public sealed class LimiteDiario
 
     public void Debitar(decimal valor)
     {
-        AssertValidation.ValidateIfLowerThen((long)valor, 1, "Valor deve ser positivo.");
+        valor = Math.Round(valor, 2, MidpointRounding.ToZero);
 
-        if (!Disponivel(valor))
-            throw new InvalidOperationException("Limite diário insuficiente.");
+        AssertValidation.ValidateIfNegative(valor, "Valor não pode ser negativo.");
+        AssertValidation.ValidateIfLowerThan(valor, 0.01m, "Valor deve ser maior ou igual a 0,01.");
+        AssertValidation.ValidateIfFalse(Disponivel(valor), "Limite diário insuficiente.");
 
         ValorUtilizado += valor;
     }
@@ -55,6 +56,6 @@ public sealed class LimiteDiario
 
     private void Validate()
     {
-        AssertValidation.ValidateIfLowerThen((long)ValorMaximo, 1, "Limite diário deve ser maior que zero.");
+        AssertValidation.ValidateIfLowerThan(ValorMaximo, 0.01m, "Limite diário deve ser maior que zero.");
     }
 }

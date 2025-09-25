@@ -3,6 +3,7 @@ using FraudSys.App.Behaviors;
 using FraudSys.App.Features.Commands;
 using FraudSys.Infra;
 using FraudSys.WebApi.Extensions;
+using FraudSys.WebApi.Middlewares;
 using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,7 @@ if (app.Environment.IsDevelopment()) app.UseSwaggerWithVersioning();
 
 await app.Services.InitializeAsync();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
