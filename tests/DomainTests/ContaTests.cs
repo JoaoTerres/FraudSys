@@ -216,7 +216,7 @@ public class ContaTests : IClassFixture<ContaFixture>
         // Assert
         act.Should().Throw<DomainException>()
             .WithMessage("Limite diário insuficiente.");
-        conta.LimitePix.ValorUtilizado.Should().Be(valorAntes); // invariável mantido
+        conta.LimitePix.ValorUtilizado.Should().Be(valorAntes);
     }
 
     [Fact]

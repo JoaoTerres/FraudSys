@@ -17,10 +17,8 @@ public static class ContaMapper
             LimiteMaximo = conta.LimitePix.ValorMaximo,
             ValorUtilizado = conta.LimitePix.ValorUtilizado,
             DataReferencia = conta.LimitePix.DataReferencia.ToString("yyyy-MM-dd"),
-
-            // 🔹 Soft Delete
             IsDeleted = conta.IsDeleted,
-            DeletedAt = conta.DeletedAt?.ToString("O") // ISO 8601 para consistência
+            DeletedAt = conta.DeletedAt?.ToString("O") 
         };
     }
 
